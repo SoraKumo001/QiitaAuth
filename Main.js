@@ -36,29 +36,31 @@ function getJson(url,token,proc) {
 
 //Token取得処理
 function getToken(func){
-	var token = sessionStorage.getItem("TOKEN");	//セッションに保存済みか確認
-	if(token == null){
-		//パラメータの取得
-		var p = {};
-		location.search.substring(1).split('&').forEach(function(v){s=v.split('=');p[s[0]]=s[1];});
-		//CODEが送られてきているか？
-		if(p.code != null && p.state == ClientStat){
-			//パラメータがみっともないのでURLから取り除く
-			history.replaceState(null,null,'?');	
-			//トークンを取得
-			postJson("https://qiita.com/api/v2/access_tokens",	
-				{client_id:ClientID,client_secret:ClientSecret,code:p.code},
-				function(e){
-					sessionStorage.setItem("TOKEN",e.token);	//セッションに保存
-					token = e.token;
-				});
-		}else{//認証サイトへ遷移
-			location.href = "https://qiita.com/api/v2/oauth/authorize?client_id="+
-					ClientID+"&scope="+ClientScope+"&state="+ClientStat;
-			return;
-		}	
+	//セッションに保存済みか確認
+	var token = sessionStorage.getItem("TOKEN");
+	if(token != null){
+		func(token);	//Token取得後の処理へ
+		return;
 	}
-	func(token);	//Token取得後の処理へ
+
+	//パラメータの取得
+	var p = {};
+	location.search.substring(1).split('&').forEach(function(v){s=v.split('=');p[s[0]]=s[1];});
+	//CODEが送られてきているか？
+	if(p.code != null && p.state == ClientStat){
+		//パラメータがみっともないのでURLから取り除く
+		history.replaceState(null,null,'?');	
+		//トークンを取得
+		postJson("https://qiita.com/api/v2/access_tokens",	
+			{client_id:ClientID,client_secret:ClientSecret,code:p.code},
+			function(e){
+				sessionStorage.setItem("TOKEN",e.token);	//セッションに保存
+				func(e.token);								//Token取得後の処理へ
+			});
+	}else{//認証サイトへ遷移
+		location.href = "https://qiita.com/api/v2/oauth/authorize?client_id="+
+				ClientID+"&scope="+ClientScope+"&state="+ClientStat;
+	}		
 }
 
 //ページが読み込まれた際に最初に呼び出される
