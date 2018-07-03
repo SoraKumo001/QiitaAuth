@@ -1,8 +1,8 @@
 (function(){
 var ClientID = "952551d397361b9aec701f7f9c5fe63753db1452";
 var ClientSecret = "238e661c2d6838153d09549584bd5f1be27e43a2";
-var ClientScope = "read_qiita";
-var ClientStat = "ABC";
+var ClientScope = "read_qiita";	//権限は必要に応じて
+var ClientStat = "ABC";			//これは適当な文字列でOK
 
 //最初に実行するファンクションを設定
 document.addEventListener("DOMContentLoaded",onLoad);
